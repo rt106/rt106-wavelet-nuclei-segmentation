@@ -1,0 +1,115 @@
+{
+    "name" : "wavelet-nuclei-segmentation",
+    "version" : "v1_0_0",
+    "queue" : "wavelet-nuclei-segmentation--v1_0_0",
+    "parameters" : {
+        "slide" : {
+            "label" : "Slide Name",
+            "description" : "The slide being analyzed.",
+            "type" : "string",
+            "default" : ""
+        },
+        "region" : {
+            "label" : "Region",
+            "description" : "The region being analyzed.",
+            "type" : "string",
+            "default" : ""
+        },
+        "branch" : {
+            "label" : "Analysis Container",
+            "description" : "Tag for analysis results.",
+            "type" : "string",
+            "default" : "templateAnalysis"
+        },
+        "channel" : {
+            "label" : "channel",
+            "description" : "The channel being analyzed",
+            "type" : "string",
+            "default" : ""
+        },
+        "force" : {
+            "label" : "Force",
+            "description" : "Whether to force an overwrite",
+            "type" : "boolean",
+            "default" : false
+        },
+        "minSize" : {
+            "label" : "Min Detection Size",
+            "description" : "Minimum Detetection Size.",
+            "type" : "number",
+            "default" : 4
+        },
+        "maxSize" : {
+            "label" : "Max Detection Size",
+            "description" : "Maximum Detetection Size.",
+            "type" : "number",
+            "default" : 5
+        },
+        "DetectionSize" : {
+			"label" : "Total number of Detections",
+            "description" : "Total number of Detections.",
+            "type" : "number",
+            "default" : 1
+        },
+        "sensitivity" : {
+            "label" : "Detection Sensitivity",
+            "description" : "Detection Sensitivity.",
+            "type" : "number",
+            "default" : 4
+        },
+        "required" : ["slide", "region", "branch", "channel", "force", "minSize", "maxSize", "DetectionSize", "sensitivity"]
+    },
+    "results" : {
+     	"nucleiImage" : {
+            "label" : "Nuclei Image",
+            "description" : "Input to nuclei segmentation",
+            "type" : "pathologyImage",
+            "value" : "slide/region/source/DAPI"
+        },
+        "nucleiMap" : {
+            "label" : "Nuclei Label Map",
+            "description" : "Label map showing nuclei regions",
+            "type" : "pathologyImage",
+            "value" : "slide/region/branch/NucSeg"
+        }
+    },
+    "result_display" : {
+        "grid" : {
+            "shape" : [1,1],
+            "columns" : [1.0],
+            "rows" : [1.0]
+        },
+        "cells" : [
+            {
+                "column" : 0,
+                "row" : 0,
+                "cellType" : "pathologyImage",
+                "source" : "result",
+                "parameter" : "nucleiImage"
+            },
+            {
+                "column": 0,
+                "row": 0,
+                "cellType": "pathologyImage",
+                "source": "result",
+                "parameter": "nucleiMap",
+                "imageProcessing" : "toBinaryImage",
+                "properties" : {
+                    "color" : "rgb(255,51,51)"
+                },
+                "controls": {
+                    "opacity": "Mask Opacity: ",
+                    "color": "Mask Color: "
+                }
+            }
+        ]
+    },
+    "api" : {
+	"context" : "none"
+    },
+    "doc" : {
+	"short" : "A short bit of documentation",
+	"full" : "Full documentation"
+    },
+    "classification" : "segmentation/cell/nuclei"
+}
