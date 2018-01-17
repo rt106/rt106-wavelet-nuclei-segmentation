@@ -1,5 +1,7 @@
 # WaveletNucleiSegmentation
 
+[![CircleCI](https://circleci.com/gh/rt106/rt106-wavelet-nuclei-segmentation.svg?style=svg)](https://circleci.com/gh/rt106/rt106-wavelet-nuclei-segmentation)
+
 _Copyright (c) General Electric Company, 2017.  All rights reserved._
 
 This is an example analytic for Rt 106. This analytic demonstrates how to use the rt106-algorithm-sdk around an [ITK](http://www.itk.org) algorithm.
