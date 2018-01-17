@@ -1,0 +1,36 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: docker:17.12.0-ce-git
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Build dev image, builds the artifacts that will be put in the ops (runtime) image
+          command: |
+            cd docker
+            docker build -t rt106-dev/rt106-wavelet-nuclei-segmentation dev
+      - run:
+          name: Copy artifact out of the dev image
+          command: |
+            cd docker
+            docker run rt106-dev/rt106-wavelet-nuclei-segmentation > ops/rt106-wavelet-nuclei-segmentation.tar.gz
+      - run:
+          name: Define the tag for runtime Docker image
+          command: |
+            if [ x$DOCKER_TAG == "x" ]; then if [ x$MAJOR != "x" -a x$MINOR != "x" -a x$PATCH != "x" ]; then echo 'export DOCKER_TAG=$MAJOR.$MINOR.$PATCH-$CIRCLE_BUILD_NUM' >> $BASH_ENV ; else echo 'export DOCKER_TAG=unversioned-$CIRCLE_BUILD_NUM' >> $BASH_ENV ; fi ; else echo 'export DOCKER_TAG=$DOCKER_TAG' >> $BASH_ENV ; fi
+      - run:
+          name: Build the ops image, this is the runtime image
+          command: |
+            source $BASH_ENV
+            echo "Tagging runtime image with $DOCKER_TAG"
+            cd docker
+            docker build -t rt106/rt106-wavelet-nuclei-segmentation:$DOCKER_TAG ops
+      - deploy:
+          name: Deploy runtime image to Docker Hub/Cloud
+          command: |
+            source $BASH_ENV
+            docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+            docker push rt106/rt106-wavelet-nuclei-segmentation:$DOCKER_TAG
+            if [ x$TAG_LATEST == "xtrue" ]; then echo "Tagging runtime image also with 'latest'"; docker tag rt106/rt106-wavelet-nuclei-segmentation:$DOCKER_TAG rt106/rt106-wavelet-nuclei-segmentation:latest; docker push rt106/rt106-wavelet-nuclei-segmentation:latest; fi
